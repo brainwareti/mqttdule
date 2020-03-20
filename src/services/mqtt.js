@@ -29,12 +29,8 @@ class MqttService {
     this.onConnectionLostHandler = undefined;
     this.isConnected = false;
 
-    console.info('dados', this.client.host);
+    this.connectClient(this.mqttSuccessHandler, this.mqttConnectionLostHandler);
   }
-
-  resetInstance = () => {
-    MqttService.instance = null;
-  };
 
   connectClient = (onSuccessHandler, onConnectionLostHandler) => {
     this.onSuccessHandler = onSuccessHandler;
@@ -72,7 +68,6 @@ class MqttService {
     console.info(errorMessage);
 
     this.isConnected = false;
-    this.resetInstance();
     //store.dispatch(reloadConnectionDatas());
   };
 
@@ -114,6 +109,16 @@ class MqttService {
     delete this.callbacks[topic];
 
     this.client.unsubscribe(topic);
+  };
+
+  mqttSuccessHandler = () => {
+    console.info('connected to mqtt');
+    this.subscribe('maia/alerta', message => console.info(message));
+    this.publishMessage('maia/status', 'test');
+  };
+
+  mqttConnectionLostHandler = () => {
+    console.info('disconnected to mqtt');
   };
 }
 

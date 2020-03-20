@@ -9,21 +9,22 @@ function* mqttConnected() {
 function* connectMqtt() {
   console.info('reload');
 
-  MqttService.resetInstance();
-  MqttService.connectClient(mqttSuccessHandler, mqttConnectionLostHandler);
+  yield put({
+    type: Types.CHANGE_CONNECTION_DATAS_CONCLUDED,
+    payload: {
+      instance: new MqttService(),
+    },
+  });
+
+  yield put({type: Types.RELOAD_MQTT});
+}
+
+function* connect() {
+  console.info('connect instance to mqtt');
 }
 
 export default function* saga() {
   yield takeLatest(Types.CHANGE_CONNECTION_STATUS, mqttConnected);
   yield takeEvery(Types.CHANGE_CONNECTION_DATAS, connectMqtt);
-  yield takeEvery(Types.RELOAD_MQTT, connectMqtt);
+  yield takeEvery(Types.RELOAD_MQTT, connect);
 }
-
-const mqttSuccessHandler = () => {
-  console.info('connected to mqtt');
-  MqttService.subscribe('maia/alerta', message => console.info(message));
-};
-
-const mqttConnectionLostHandler = () => {
-  console.info('disconnected to mqtt');
-};

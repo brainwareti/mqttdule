@@ -14,6 +14,7 @@ const INITIAL_STATE = {
     address: 'test.asdf.org',
     port: 8080,
   },
+  instance: null,
   connectionStatus: false,
   isConnectionDatasChanged: false,
   receivedAlert: false,
@@ -49,6 +50,7 @@ export default function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         isConnectionDatasChanged: false,
+        instance: payload.instance,
       };
     default:
       return state;
