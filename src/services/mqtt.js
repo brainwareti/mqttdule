@@ -1,12 +1,12 @@
-import {Alert} from 'react-native';
+import {} from 'react-native';
 
 import init from '../core/libraries/mqtt';
 import store from '../store';
 import {
   changeConnectionStatus,
-  reloadConnectionDatas,
-  receiveAlert,
+  concludChangeConnectionDatas,
 } from '../store/ducks/connection';
+import {receiveAlert} from '../store/ducks/communication';
 
 init();
 
@@ -75,9 +75,8 @@ class MqttService {
 
   onFailure = ({errorMessage}) => {
     console.info(errorMessage, this.client.host);
-
+    store.dispatch(changeConnectionStatus(false));
     this.isConnected = false;
-    //store.dispatch(reloadConnectionDatas());
   };
 
   onMessageArrived = message => {
@@ -88,7 +87,6 @@ class MqttService {
 
   publishMessage = (topic, message) => {
     if (!this.isConnected) {
-      console.info('not connected');
       this.onFailure();
       return;
     }
@@ -98,34 +96,43 @@ class MqttService {
 
   subscribe = (topic, callback) => {
     if (!this.isConnected) {
-      console.info('not connected');
-
       return;
     }
 
     this.callbacks[topic] = callback;
-
     this.client.subscribe(topic);
   };
 
   unsubscribe = topic => {
     if (!this.isConnected) {
-      console.info('not connected');
-
       return;
     }
 
     delete this.callbacks[topic];
-
     this.client.unsubscribe(topic);
   };
 
   mqttSuccessHandler = () => {
     console.info('connected to mqtt');
-    this.subscribe('maia/alerta', message =>
-      store.dispatch(receiveAlert(JSON.parse(message), 'maia/alerta')),
+
+    store.dispatch(concludChangeConnectionDatas());
+
+    const state = store.getState();
+    const {
+      communication: {
+        topics: {alerta, respostas},
+      },
+    } = state;
+
+    console.info(respostas, alerta);
+
+    this.subscribe(respostas, message =>
+      store.dispatch(receiveAlert(JSON.parse(message))),
     );
-    this.publishMessage('maia/status', 'test');
+
+    this.subscribe(alerta, message =>
+      store.dispatch(receiveAlert(JSON.parse(message))),
+    );
   };
 
   mqttConnectionLostHandler = () => {

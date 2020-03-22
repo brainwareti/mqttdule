@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import Device from 'react-native-device-info';
 
-import {sendMessage, changeConnectionDatas} from '../../store/ducks/connection';
+import {changeConnectionDatas} from '../../store/ducks/connection';
+import {sendMaterialMessage} from '../../store/ducks/communication';
 
 import OfflineNotification from '../../components/OfflineNotifications';
 import AlertModal from '../../components/AlertModal';
@@ -20,35 +22,30 @@ class Main extends Component {
   }
 
   handleSubmitMessage = () => {
-    this.props.sendMessage('testeeeeeee');
+    // preparar objeto para enviar
+    const materialRequest = {
+      type: 'material',
+      area: 'notebook',
+      linha: 'G18',
+      clientId: Device.getUniqueId(),
+      id: new Date().valueOf(),
+    };
+
+    this.props.sendMaterialMessage(JSON.stringify(materialRequest));
   };
 
   handleChangeDatas = () => {
-    // const connectionDatas = {
-    //   address: 'test.mosquitto.org',
-    //   port: 8080,
-    //   username: '',
-    //   password: '',
-    // };
-
     const connectionDatas = {
-      address: 'mqtt.teserakt.io',
-      port: 15675,
-      username: '',
-      password: '',
+      address: 'mqtt.eclipse.org',
+      port: 80,
+      username: 'maia-test',
+      password: 'maia-test',
     };
 
     this.props.changeConnectionDatas(connectionDatas);
   };
 
   handleChangeDatas2 = () => {
-    // const connectionDatas = {
-    //   address: 'test.mosquitto.org',
-    //   port: 8080,
-    //   username: '',
-    //   password: '',
-    // };
-
     const connectionDatas = {
       address: 'test.mosquitto.org',
       port: 8080,
@@ -112,8 +109,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  sendMessage: bindActionCreators(sendMessage, dispatch),
   changeConnectionDatas: bindActionCreators(changeConnectionDatas, dispatch),
+  sendMaterialMessage: bindActionCreators(sendMaterialMessage, dispatch),
 });
 
 // eslint-disable-next-line prettier/prettier

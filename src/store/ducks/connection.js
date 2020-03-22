@@ -1,17 +1,11 @@
 export const Types = {
-  RECEIVE_ALERT: 'RECEIVE_ALERT',
   CHANGE_CONNECTION_STATUS: 'CHANGE_CONNECTION_STATUS',
   CHANGE_CONNECTION_DATAS: 'CHANGE_CONNECTION_DATAS',
-  CLEAN_ALERT: 'CLEAN_ALERT',
   CHANGE_CONNECTION_DATAS_CONCLUDED: 'CHANGE_CONNECTION_DATAS_CONCLUDED',
   RELOAD_MQTT: 'RELOAD_MQTT',
-  SEND_MESSAGE: 'SEND_MESSAGE',
-  MESSAGE_SENDED: 'MESSAGE_SENDED',
 };
 
 const INITIAL_STATE = {
-  alert: null,
-  topic: null,
   connectionDatas: {
     address: '',
     port: 8080,
@@ -21,8 +15,6 @@ const INITIAL_STATE = {
   instance: null,
   connectionStatus: false,
   isConnectionDatasChanged: false,
-  receivedAlert: false,
-  message: '',
 };
 
 export default function reducer(state = INITIAL_STATE, action) {
@@ -35,18 +27,6 @@ export default function reducer(state = INITIAL_STATE, action) {
         connectionDatas: payload.connectionDatas,
         isConnectionDatasChanged: true,
       };
-    case Types.RECEIVE_ALERT:
-      return {
-        ...state,
-        alert: payload.alert,
-        topic: payload.topic,
-      };
-    case Types.CLEAN_ALERT:
-      return {
-        ...state,
-        alert: null,
-        topic: null,
-      };
     case Types.CHANGE_CONNECTION_STATUS:
       return {
         ...state,
@@ -58,16 +38,6 @@ export default function reducer(state = INITIAL_STATE, action) {
         isConnectionDatasChanged: false,
         instance: payload.instance,
       };
-    case Types.SEND_MESSAGE:
-      return {
-        ...state,
-        message: payload.message,
-      };
-    case Types.MESSAGE_SENDED:
-      return {
-        ...state,
-        message: '',
-      };
     default:
       return state;
   }
@@ -78,18 +48,6 @@ export const changeConnectionDatas = connectionDatas => ({
   payload: {
     connectionDatas,
   },
-});
-
-export const receiveAlert = (alert, topic) => ({
-  type: Types.RECEIVE_ALERT,
-  payload: {
-    alert,
-    topic,
-  },
-});
-
-export const clearAlert = () => ({
-  type: Types.CLEAN_ALERT,
 });
 
 export const changeConnectionStatus = status => ({
@@ -105,11 +63,4 @@ export const concludChangeConnectionDatas = () => ({
 
 export const reloadConnectionDatas = () => ({
   type: Types.RELOAD_MQTT,
-});
-
-export const sendMessage = message => ({
-  type: Types.SEND_MESSAGE,
-  payload: {
-    message,
-  },
 });

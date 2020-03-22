@@ -1,11 +1,4 @@
-import {
-  call,
-  put,
-  select,
-  takeEvery,
-  takeLatest,
-  delay,
-} from 'redux-saga/effects';
+import {put, takeEvery, takeLatest} from 'redux-saga/effects';
 import MqttService from '../../services/mqtt';
 import {Types} from '../ducks/connection';
 
@@ -30,21 +23,8 @@ function* connect() {
   console.info('connect instance to mqtt');
 }
 
-function* sendMessage() {
-  const message = yield select(state => state.connection.message);
-  const instance = yield select(state => state.connection.instance);
-  instance.publishMessage('maia/status', message);
-}
-
-function* receiveAlert() {
-  yield delay(3000);
-  yield put({type: Types.CLEAN_ALERT});
-}
-
 export default function* saga() {
   yield takeLatest(Types.CHANGE_CONNECTION_STATUS, mqttConnected);
   yield takeEvery(Types.CHANGE_CONNECTION_DATAS, connectMqtt);
   yield takeLatest(Types.RELOAD_MQTT, connect);
-  yield takeEvery(Types.SEND_MESSAGE, sendMessage);
-  yield takeEvery(Types.RECEIVE_ALERT, receiveAlert);
 }

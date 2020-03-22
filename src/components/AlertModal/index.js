@@ -60,7 +60,6 @@ const alerts = [
 
 const AlertModal = () => {
   const receivedAlert = useSelector(state => state.connection.alert);
-  const topic = useSelector(state => state.connection.topic);
 
   const alertSelected = alerts.filter(alert => {
     if (alert.type === receivedAlert.type) {

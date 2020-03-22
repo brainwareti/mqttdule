@@ -1,6 +1,3 @@
-import MqttService from '../services/mqtt';
-import {connected} from '../store/ducks/connection';
-import store from '../store';
 import {getDatasFromAsync} from '../utils/asyncDatas';
 
 export default function initializate() {
