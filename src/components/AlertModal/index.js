@@ -77,7 +77,7 @@ const AlertModal = () => {
   const color = alertSelected.color;
   const emergency = alertSelected.type === 'emergency';
 
-  return (
+  const modal = () => (
     <Container emergency={emergency}>
       <ModalContainer>
         <Status color={color} />
@@ -109,6 +109,8 @@ const AlertModal = () => {
       </ModalContainer>
     </Container>
   );
+
+  return modal();
 };
 
 export default AlertModal;

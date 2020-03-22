@@ -6,8 +6,10 @@ export const getDatasFromAsync = async () => {
   AsyncStorage.getItem('done').then(async value => {
     if (!value) {
       const connectionDatas = {
-        address: 'test.mosquitto.org',
+        address: 'mqtt.eclipse.org',
         port: 8080,
+        password: 'maia-test',
+        username: 'maia-test',
       };
 
       await saveOnAsync(JSON.stringify(connectionDatas));

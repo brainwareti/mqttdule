@@ -5,19 +5,24 @@ export const Types = {
   CLEAN_ALERT: 'CLEAN_ALERT',
   CHANGE_CONNECTION_DATAS_CONCLUDED: 'CHANGE_CONNECTION_DATAS_CONCLUDED',
   RELOAD_MQTT: 'RELOAD_MQTT',
+  SEND_MESSAGE: 'SEND_MESSAGE',
+  MESSAGE_SENDED: 'MESSAGE_SENDED',
 };
 
 const INITIAL_STATE = {
   alert: null,
   topic: null,
   connectionDatas: {
-    address: 'test.asdf.org',
+    address: '',
     port: 8080,
+    password: '',
+    username: '',
   },
   instance: null,
   connectionStatus: false,
   isConnectionDatasChanged: false,
   receivedAlert: false,
+  message: '',
 };
 
 export default function reducer(state = INITIAL_STATE, action) {
@@ -40,6 +45,7 @@ export default function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         alert: null,
+        topic: null,
       };
     case Types.CHANGE_CONNECTION_STATUS:
       return {
@@ -51,6 +57,16 @@ export default function reducer(state = INITIAL_STATE, action) {
         ...state,
         isConnectionDatasChanged: false,
         instance: payload.instance,
+      };
+    case Types.SEND_MESSAGE:
+      return {
+        ...state,
+        message: payload.message,
+      };
+    case Types.MESSAGE_SENDED:
+      return {
+        ...state,
+        message: '',
       };
     default:
       return state;
@@ -89,4 +105,11 @@ export const concludChangeConnectionDatas = () => ({
 
 export const reloadConnectionDatas = () => ({
   type: Types.RELOAD_MQTT,
+});
+
+export const sendMessage = message => ({
+  type: Types.SEND_MESSAGE,
+  payload: {
+    message,
+  },
 });

@@ -5,6 +5,7 @@ import store from '../store';
 import {
   changeConnectionStatus,
   reloadConnectionDatas,
+  receiveAlert,
 } from '../store/ducks/connection';
 
 init();
@@ -37,35 +38,43 @@ class MqttService {
 
     this.onConnectionLostHandler = onConnectionLostHandler;
 
+    const state = store.getState();
+    const {
+      connection: {
+        connectionDatas: {username = '', password = ''},
+      },
+    } = state;
+
     this.client.onConnectionLost = () => {
       this.isConnected = false;
       store.dispatch(changeConnectionStatus(false));
       onConnectionLostHandler();
     };
 
-    this.client.connect({
+    const connectDatas = {
       timeout: 10,
-
       onSuccess: () => {
         this.isConnected = true;
         store.dispatch(changeConnectionStatus(true));
         onSuccessHandler();
       },
-
       useSSL: false,
-
       onFailure: this.onFailure,
-
       reconnect: true,
-
       keepAliveInterval: 20,
-
       cleanSession: true,
-    });
+    };
+
+    if (username && username.length > 0) {
+      connectDatas.userName = username;
+      connectDatas.password = password;
+    }
+
+    this.client.connect(connectDatas);
   };
 
   onFailure = ({errorMessage}) => {
-    console.info(errorMessage);
+    console.info(errorMessage, this.client.host);
 
     this.isConnected = false;
     //store.dispatch(reloadConnectionDatas());
@@ -113,7 +122,9 @@ class MqttService {
 
   mqttSuccessHandler = () => {
     console.info('connected to mqtt');
-    this.subscribe('maia/alerta', message => console.info(message));
+    this.subscribe('maia/alerta', message =>
+      store.dispatch(receiveAlert(JSON.parse(message), 'maia/alerta')),
+    );
     this.publishMessage('maia/status', 'test');
   };
 
